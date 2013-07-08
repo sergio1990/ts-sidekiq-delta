@@ -35,13 +35,13 @@ module ThinkingSphinx::Deltas::SidekiqDelta::IndexUtils
 
   def ts_config
     @ts_config ||= ThinkingSphinx::Configuration.instance.tap do |config|
-      config.generate
+      config.preload_indices
     end
   end
 
   private
   def indices
-    @indices ||= ts_config.configuration.indices.collect { |i| i.name }
+    @indices ||= ts_config.indices_for_references(self).collect { |i| i.name }
   end
 
 end
