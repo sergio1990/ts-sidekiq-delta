@@ -63,7 +63,7 @@ class ThinkingSphinx::Deltas::SidekiqDelta::CoreIndex
 
     # Load config like ts:in.
     unless ENV['INDEX_ONLY'] == 'true'
-      puts "Generating Configuration to #{ts_config.config_file}" if verbose
+      puts "Generating Configuration to #{ts_config.configuration_file}" if verbose
       ts_config.build
     end
     FileUtils.mkdir_p(ts_config.searchd_file_path)
