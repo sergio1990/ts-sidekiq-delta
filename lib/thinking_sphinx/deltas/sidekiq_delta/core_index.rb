@@ -3,8 +3,8 @@ class ThinkingSphinx::Deltas::SidekiqDelta::CoreIndex
   def sphinx_indices
     unless @sphinx_indices
       @ts_config ||= ThinkingSphinx::Configuration.instance
-      @ts_config.generate
-      @sphinx_indices = @ts_config.configuration.indices.collect { |i| i.name }
+      @ts_config.preload_indices
+      @sphinx_indices = @ts_config.indices_for_references(self).collect { |i| i.name }
       # The collected indices look like:
       # ["foo_core", "foo_delta", "foo", "bar_core", "bar_delta", "bar"]
       @sphinx_indices.reject! { |i| i =~ /_(core|delta)$/}

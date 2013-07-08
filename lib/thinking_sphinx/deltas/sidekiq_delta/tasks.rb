@@ -12,7 +12,7 @@ namespace :thinking_sphinx do
   end
 
   desc 'Like `rake thinking_sphinx:index`, but locks one index at a time.'
-  task :smart_index => :app_env do
+  task :smart_index => :environment do
     ret = ThinkingSphinx::Deltas::SidekiqDelta::CoreIndex.new.smart_index
 
     abort("Indexing failed.") if ret != true
@@ -29,10 +29,10 @@ unless Rake::Task.task_defined?('thinking_sphinx:index')
 end
 
 # Ensure that indexing does not conflict with ts-resque-delta delta jobs.
-Rake::Task['thinking_sphinx:index'].enhance ['thinking_sphinx:lock_deltas'] do
+Rake::Task['ts:index'].enhance ['thinking_sphinx:lock_deltas'] do
   Rake::Task['thinking_sphinx:unlock_deltas'].invoke
 end
 
-Rake::Task['thinking_sphinx:reindex'].enhance ['thinking_sphinx:lock_deltas'] do
+Rake::Task['ts:rebuild'].enhance ['thinking_sphinx:lock_deltas'] do
   Rake::Task['thinking_sphinx:unlock_deltas'].invoke
 end
