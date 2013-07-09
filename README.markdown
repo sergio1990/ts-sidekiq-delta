@@ -5,25 +5,18 @@ Delayed Deltas for Thinking Sphinx (with Sidekiq)
 
 Installation
 ------------
-This gem depends on the following gems: _thinking-sphinx_ and _sidekiq_.
 
-    gem install ts-sidekiq-delta
-
-Add _ts-resque-delta_ to your **Gemfile** file, with the rest of your gem
+Add _ts-sidekiq-delta_ to your **Gemfile** file, with the rest of your gem
 dependencies:
 
-    gem 'ts-sidekiq-delta', '0.0.1'
+    gem 'ts-sidekiq-delta', '0.0.3', github: 'sergio1990/ts-sidekiq-delta'
 
 If you're using Rails 3, the rake tasks will automatically be loaded by Rails.
-If you're using Rails 2, add the following line to your **Rakefile**:
-
-    require 'thinking_sphinx/deltas/sidekiq_delta/tasks'
 
 Add the delta property to each `define_index` block:
 
-    define_index do
+    define_index delta: ThinkingSphinx::Deltas::SidekiqDelta do
       # ...
-      set_property :delta => ThinkingSphinx::Deltas::SidekiqDelta
     end
 
 If you've never used delta indexes before, you'll want to add the boolean
@@ -31,7 +24,7 @@ column named `:delta` to each model's table (note, you must set the `:default`
 value to `true`):
 
     def self.up
-      add_column :foos, :delta, :boolean, :default => true, :null => false
+      add_column :foos, :delta, :boolean, default: true, null: false
     end
 
 Also, I highly recommend adding a MySQL index to the table of any model using
@@ -68,6 +61,10 @@ Very little has been changed in this version from the sources below, so very lit
 Author
 -----------------------------------
 * [Danny Hawkins](https://github.com/danhawkins)
+
+Contributors (for ts-sidekiq-delta)
+___________________________________
+* [Sergey Gernyak](https://github.com/sergio1990)
 
 Contributors (for ts-resque-delta)
 -----------------------------------
