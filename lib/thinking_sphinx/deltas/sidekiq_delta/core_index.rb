@@ -4,7 +4,7 @@ class ThinkingSphinx::Deltas::SidekiqDelta::CoreIndex
     unless @sphinx_indices
       @ts_config ||= ThinkingSphinx::Configuration.instance
       @ts_config.preload_indices
-      @sphinx_indices = @ts_config.indices_for_references(self).collect { |i| i.name }
+      @sphinx_indices = @ts_config.indices.collect { |i| i.name }
       # The collected indices look like:
       # ["foo_core", "foo_delta", "foo", "bar_core", "bar_delta", "bar"]
       @sphinx_indices.reject! { |i| i =~ /_(core|delta)$/}
@@ -60,18 +60,15 @@ class ThinkingSphinx::Deltas::SidekiqDelta::CoreIndex
   def smart_index(opts = {})
     verbose = opts.fetch(:verbose, true)
     verbose = false if ENV['SILENT'] == 'true'
-
     # Load config like ts:in.
     unless ENV['INDEX_ONLY'] == 'true'
       puts "Generating Configuration to #{ts_config.configuration_file}" if verbose
-      ts_config.build
+      ts_config.render_to_file
     end
-    FileUtils.mkdir_p(ts_config.searchd_file_path)
-
+    FileUtils.mkdir_p(ts_config.indices_location)
     # Index each core, one at a time. Wrap with delta locking logic.
     index_prefixes.each do |index_name|
       ret = nil
-
       with_delta_index_lock(index_name) do
         ThinkingSphinx::Deltas::SidekiqDelta.prepare_for_core_index(index_name)
         ts_config.controller.index("#{index_name}_core", :verbose => verbose)
@@ -79,7 +76,6 @@ class ThinkingSphinx::Deltas::SidekiqDelta::CoreIndex
       end
 
       return false if ret.to_i != 0
-
       ThinkingSphinx::Deltas::SidekiqDelta::DeltaJob.perform_async("#{index_name}_delta")
     end
 

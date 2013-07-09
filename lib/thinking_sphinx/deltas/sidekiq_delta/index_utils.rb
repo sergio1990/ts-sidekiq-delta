@@ -10,7 +10,7 @@ module ThinkingSphinx::Deltas::SidekiqDelta::IndexUtils
   #
   # Returns an Array of index prefixes.
   def index_prefixes
-    @prefixes ||= indices.reject { |i| i =~ /_(core|delta)$/ }
+    @prefixes ||= indices.map { |i| i.gsub /_(core|delta)$/, "" }.uniq
   end
 
   def core_indices
@@ -41,7 +41,7 @@ module ThinkingSphinx::Deltas::SidekiqDelta::IndexUtils
 
   private
   def indices
-    @indices ||= ts_config.indices_for_references(self).collect { |i| i.name }
+    @indices ||= ts_config.indices.collect { |i| i.name }
   end
 
 end
