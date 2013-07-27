@@ -76,7 +76,7 @@ class ThinkingSphinx::Deltas::SidekiqDelta < ThinkingSphinx::Deltas::DefaultDelt
   #
   def index(index, instance = nil)
     return true if skip?(instance)
-    ThinkingSphinx::Deltas::SidekiqDelta::DeltaJob.perform_async(delta) unless self.class.locked?(delta)
+    ThinkingSphinx::Deltas::SidekiqDelta::DeltaJob.perform_async(index.name) unless self.class.locked?(index.name)
     # if instance
     #   model.core_index_names.each do |core|
     #     FlagAsDeletedSet.add(core, instance.sphinx_document_id)
