@@ -9,7 +9,7 @@ Installation
 Add _ts-sidekiq-delta_ to your **Gemfile** file, with the rest of your gem
 dependencies:
 
-    gem 'ts-sidekiq-delta', '0.0.3', github: 'sergio1990/ts-sidekiq-delta'
+    gem 'ts-sidekiq-delta', '0.0.4', github: 'sergio1990/ts-sidekiq-delta'
 
 If you're using Rails 3, the rake tasks will automatically be loaded by Rails.
 

@@ -69,22 +69,19 @@ class ThinkingSphinx::Deltas::SidekiqDelta < ThinkingSphinx::Deltas::DefaultDelt
   # options are controlled via ThinkingSphinx.updates_enabled? and
   # ThinkingSphinx.deltas_enabled?.
   #
-  # @param [Class] model the ActiveRecord model to index.
+  # @param [Class] index the index instance to index.
   # @param [ActiveRecord::Base] instance the instance of the given model that
   #   has changed. Optional.
   # @return [Boolean] true
   #
-  def index(model, instance = nil)
+  def index(index, instance = nil)
     return true if skip?(instance)
-    model.delta_index_names.each do |delta|
-      next if self.class.locked?(delta)
-      ThinkingSphinx::Deltas::SidekiqDelta::DeltaJob.perform_async(delta)
-    end
-    if instance
-      model.core_index_names.each do |core|
-        FlagAsDeletedSet.add(core, instance.sphinx_document_id)
-      end
-    end
+    ThinkingSphinx::Deltas::SidekiqDelta::DeltaJob.perform_async(delta) unless self.class.locked?(delta)
+    # if instance
+    #   model.core_index_names.each do |core|
+    #     FlagAsDeletedSet.add(core, instance.sphinx_document_id)
+    #   end
+    # end
     true
   end
 
@@ -97,9 +94,7 @@ class ThinkingSphinx::Deltas::SidekiqDelta < ThinkingSphinx::Deltas::DefaultDelt
   # @return [Boolean]
   #
   def skip?(instance)
-    !ThinkingSphinx.updates_enabled? ||
-    !ThinkingSphinx.deltas_enabled?  ||
-    (instance && !toggled(instance))
+    instance && !toggled?(instance)
   end
 end
 
